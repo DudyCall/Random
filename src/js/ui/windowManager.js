@@ -31,12 +31,6 @@ export function openWindow(app) {
   const renderer = appRenderers[app.id];
   if (renderer) {
     renderer(body);
-  } else {
-    body.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:0.3;font-size:48px;">
-        ${app.icon}
-      </div>
-    `;
   }
 
   $container.appendChild(el);
