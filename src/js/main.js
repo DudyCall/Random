@@ -5,9 +5,11 @@
 import { buildDesktopIcons } from "./ui/desktop.js";
 import { buildStartMenu, toggleStartMenu } from "./ui/startMenu.js";
 import { showContextMenu, removeContextMenu } from "./ui/contextMenu.js";
+import { initTaskbar } from "./ui/taskbar.js";
 import { tickClock } from "./utils/clock.js";
 
 function init() {
+  initTaskbar();
   buildDesktopIcons();
   buildStartMenu();
   bindGlobalEvents();

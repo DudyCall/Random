@@ -1,6 +1,6 @@
 import { openWindows, nextWindowId, nextZ } from "../core/state.js";
 import { appRenderers } from "../apps/index.js";
-import { addTaskbarItem, removeTaskbarItem } from "./taskbar.js";
+import { eventBus } from "../core/eventBus.js";
 import { createWindow } from "./window.js";
 
 export function openWindow(app) {
@@ -37,19 +37,7 @@ export function openWindow(app) {
 
   openWindows.set(id, { el, title: app.name, appId: app.id, minimized: false, maximized: false });
 
-  addTaskbarItem(id, app, () => {
-    const win = openWindows.get(id);
-    if (!win) return;
-    if (win.minimized) {
-      restoreWindow(id);
-      focusWindow(id);
-    } else if (win.el.classList.contains("active")) {
-      minimizeWindow(id);
-    } else {
-      focusWindow(id);
-    }
-  });
-
+  eventBus.emit("window:opened", { id, app });
   focusWindow(id);
 }
 
@@ -61,9 +49,7 @@ export function focusWindow(id) {
   win.el.classList.add("active");
   win.el.style.zIndex = z;
 
-  document.querySelectorAll(".taskbar-item").forEach((ti) => {
-    ti.classList.toggle("active", +ti.dataset.winId === id);
-  });
+  eventBus.emit("window:focused", { id });
 }
 
 export function minimizeWindow(id) {
@@ -92,5 +78,5 @@ export function closeWindow(id) {
   if (!win) return;
   win.el.remove();
   openWindows.delete(id);
-  removeTaskbarItem(id);
+  eventBus.emit("window:closed", { id });
 }
