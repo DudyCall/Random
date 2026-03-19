@@ -24,6 +24,7 @@
     { id: "trivia",     name: "Trivia",            icon: "❓" },
     { id: "weather",    name: "Weather",           icon: "🌤️" },
     { id: "tracker",    name: "Daily Tracker",     icon: "📅" },
+    { id: "browser",    name: "Web Browser",      icon: "🌐" },
   ];
 
   const fakeQuotes = [
@@ -131,8 +132,12 @@
 
     if (app.id === "quotes") {
       renderQuotesApp(body);
+    } else if (app.id === "weather") {
+      renderWeatherApp(body);
     } else if (app.id === "tracker") {
       renderDailyTracker(body);
+    } else if (app.id === "browser") {
+      renderBrowserApp(body);
     } else {
       body.innerHTML = `
         <div style="display:flex;align-items:center;justify-content:center;height:100%;opacity:0.3;font-size:48px;">
@@ -300,6 +305,308 @@
     } catch (err) {
       return { error: "Failed to connect to GitHub." };
     }
+  }
+
+  // ── Weather App (Open-Meteo API) ───────────────────
+  const WMO_CODES = {
+    0: { desc: "Clear sky", icon: "☀️" },
+    1: { desc: "Mainly clear", icon: "🌤️" },
+    2: { desc: "Partly cloudy", icon: "⛅" },
+    3: { desc: "Overcast", icon: "☁️" },
+    45: { desc: "Fog", icon: "🌫️" },
+    48: { desc: "Depositing rime fog", icon: "🌫️" },
+    51: { desc: "Light drizzle", icon: "🌦️" },
+    53: { desc: "Moderate drizzle", icon: "🌦️" },
+    55: { desc: "Dense drizzle", icon: "🌦️" },
+    61: { desc: "Slight rain", icon: "🌧️" },
+    63: { desc: "Moderate rain", icon: "🌧️" },
+    65: { desc: "Heavy rain", icon: "🌧️" },
+    71: { desc: "Slight snow", icon: "🌨️" },
+    73: { desc: "Moderate snow", icon: "🌨️" },
+    75: { desc: "Heavy snow", icon: "🌨️" },
+    77: { desc: "Snow grains", icon: "🌨️" },
+    80: { desc: "Slight showers", icon: "🌦️" },
+    81: { desc: "Moderate showers", icon: "🌦️" },
+    82: { desc: "Violent showers", icon: "🌦️" },
+    85: { desc: "Slight snow showers", icon: "🌨️" },
+    86: { desc: "Heavy snow showers", icon: "🌨️" },
+    95: { desc: "Thunderstorm", icon: "⛈️" },
+    96: { desc: "Thunderstorm with hail", icon: "⛈️" },
+    99: { desc: "Thunderstorm with heavy hail", icon: "⛈️" },
+  };
+
+  function getWmo(code) {
+    return WMO_CODES[code] || { desc: "Unknown", icon: "❓" };
+  }
+
+  function renderWeatherApp(el) {
+    el.innerHTML = `
+      <div class="weather-app">
+        <div class="weather-search">
+          <input type="text" class="weather-input" placeholder="Enter city name..." />
+          <button class="weather-search-btn">Search</button>
+          <button class="weather-locate-btn" title="Use my location">📍</button>
+        </div>
+        <div class="weather-content">
+          <div class="weather-placeholder">Enter a city or use your location to see the weather.</div>
+        </div>
+      </div>
+    `;
+
+    const input = el.querySelector(".weather-input");
+    const searchBtn = el.querySelector(".weather-search-btn");
+    const locateBtn = el.querySelector(".weather-locate-btn");
+    const content = el.querySelector(".weather-content");
+
+    async function searchCity() {
+      const query = input.value.trim();
+      if (!query) return;
+      content.innerHTML = '<div class="weather-loading">Searching...</div>';
+      try {
+        const geoUrl = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=1&language=en&format=json`;
+        const geoRes = await fetch(geoUrl);
+        const geoData = await geoRes.json();
+        if (!geoData.results || geoData.results.length === 0) {
+          content.innerHTML = '<div class="weather-error">City not found. Try another name.</div>';
+          return;
+        }
+        const place = geoData.results[0];
+        await loadWeather(place.latitude, place.longitude, place.name, place.country);
+      } catch {
+        content.innerHTML = '<div class="weather-error">Failed to search. Check your connection.</div>';
+      }
+    }
+
+    searchBtn.addEventListener("click", searchCity);
+    input.addEventListener("keydown", (e) => { if (e.key === "Enter") searchCity(); });
+
+    locateBtn.addEventListener("click", () => {
+      if (!navigator.geolocation) {
+        content.innerHTML = '<div class="weather-error">Geolocation not supported by your browser.</div>';
+        return;
+      }
+      content.innerHTML = '<div class="weather-loading">Getting your location...</div>';
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          await loadWeather(pos.coords.latitude, pos.coords.longitude, "Your Location", "");
+        },
+        () => {
+          content.innerHTML = '<div class="weather-error">Location access denied.</div>';
+        }
+      );
+    });
+
+    async function loadWeather(lat, lon, name, country) {
+      content.innerHTML = '<div class="weather-loading">Loading weather...</div>';
+      try {
+        const params = [
+          `latitude=${lat}`,
+          `longitude=${lon}`,
+          "current=temperature_2m,relative_humidity_2m,apparent_temperature,weather_code,wind_speed_10m",
+          "daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+          "timezone=auto",
+          "forecast_days=7",
+        ].join("&");
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`);
+        const data = await res.json();
+        if (data.error) {
+          content.innerHTML = `<div class="weather-error">${data.reason || "API error"}</div>`;
+          return;
+        }
+        renderWeatherData(content, data, name, country);
+      } catch {
+        content.innerHTML = '<div class="weather-error">Failed to load weather data.</div>';
+      }
+    }
+
+    function renderWeatherData(container, data, name, country) {
+      const cur = data.current;
+      const wmo = getWmo(cur.weather_code);
+      const label = country ? `${name}, ${country}` : name;
+
+      let forecastHTML = "";
+      for (let i = 0; i < data.daily.time.length; i++) {
+        const d = data.daily;
+        const dayWmo = getWmo(d.weather_code[i]);
+        const dayName = new Date(d.time[i] + "T00:00").toLocaleDateString(undefined, { weekday: "short" });
+        forecastHTML += `
+          <div class="forecast-day">
+            <span class="forecast-name">${dayName}</span>
+            <span class="forecast-icon">${dayWmo.icon}</span>
+            <span class="forecast-temps">
+              <span class="temp-hi">${Math.round(d.temperature_2m_max[i])}°</span>
+              <span class="temp-lo">${Math.round(d.temperature_2m_min[i])}°</span>
+            </span>
+            <span class="forecast-rain">${d.precipitation_probability_max[i] ?? "-"}%</span>
+          </div>
+        `;
+      }
+
+      container.innerHTML = `
+        <div class="weather-current">
+          <div class="weather-main">
+            <span class="weather-big-icon">${wmo.icon}</span>
+            <div class="weather-temp-block">
+              <span class="weather-temp">${Math.round(cur.temperature_2m)}°C</span>
+              <span class="weather-desc">${wmo.desc}</span>
+              <span class="weather-location">${label}</span>
+            </div>
+          </div>
+          <div class="weather-details">
+            <div class="weather-detail"><span>Feels like</span><strong>${Math.round(cur.apparent_temperature)}°C</strong></div>
+            <div class="weather-detail"><span>Humidity</span><strong>${cur.relative_humidity_2m}%</strong></div>
+            <div class="weather-detail"><span>Wind</span><strong>${Math.round(cur.wind_speed_10m)} km/h</strong></div>
+          </div>
+        </div>
+        <div class="weather-forecast">
+          <h4>7-Day Forecast</h4>
+          <div class="forecast-grid">${forecastHTML}</div>
+        </div>
+      `;
+    }
+  }
+
+  // ── Web Browser App ──────────────────────────────────
+  function renderBrowserApp(el) {
+    const homepage = "https://www.wikipedia.org";
+    const history = [homepage];
+    let historyIndex = 0;
+
+    el.innerHTML = `
+      <div class="browser-app">
+        <div class="browser-toolbar">
+          <button class="browser-nav-btn" data-action="back" title="Back" disabled>◀</button>
+          <button class="browser-nav-btn" data-action="forward" title="Forward" disabled>▶</button>
+          <button class="browser-nav-btn" data-action="refresh" title="Refresh">⟳</button>
+          <button class="browser-nav-btn" data-action="home" title="Home">🏠</button>
+          <div class="browser-url-bar">
+            <input type="text" class="browser-url-input" value="${homepage}" spellcheck="false" />
+          </div>
+          <button class="browser-nav-btn browser-go-btn" data-action="go" title="Go">→</button>
+        </div>
+        <div class="browser-bookmarks-bar">
+          <button class="browser-bookmark" data-url="https://www.arto.dk">⭐ arto.dk</button>
+          <button class="browser-bookmark" data-url="https://www.seydur.ngrok.app">⭐ seydur.ngrok.app</button>
+        </div>
+        <div class="browser-viewport">
+          <iframe class="browser-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" src="${homepage}"></iframe>
+          <div class="browser-error hidden">
+            <div class="browser-error-icon">⚠️</div>
+            <div class="browser-error-title">This page can't be displayed</div>
+            <div class="browser-error-message">The website may have refused the connection, or the address may be incorrect.</div>
+          </div>
+        </div>
+        <div class="browser-statusbar">Ready</div>
+      </div>
+    `;
+
+    const urlInput    = el.querySelector(".browser-url-input");
+    const iframe      = el.querySelector(".browser-frame");
+    const backBtn     = el.querySelector('[data-action="back"]');
+    const fwdBtn      = el.querySelector('[data-action="forward"]');
+    const refreshBtn  = el.querySelector('[data-action="refresh"]');
+    const homeBtn     = el.querySelector('[data-action="home"]');
+    const goBtn       = el.querySelector('[data-action="go"]');
+    const errorPanel  = el.querySelector(".browser-error");
+    const statusBar   = el.querySelector(".browser-statusbar");
+
+    function normalizeUrl(raw) {
+      let url = raw.trim();
+      if (!url) return homepage;
+      if (!/^https?:\/\//i.test(url)) {
+        // If it looks like a domain, add https
+        if (/^[\w-]+(\.[\w-]+)+/.test(url)) {
+          url = "https://" + url;
+        } else {
+          // Treat as search query
+          url = "https://www.google.com/search?igu=1&q=" + encodeURIComponent(url);
+        }
+      }
+      return url;
+    }
+
+    function navigate(url) {
+      url = normalizeUrl(url);
+      urlInput.value = url;
+      statusBar.textContent = "Loading " + url + "...";
+      errorPanel.classList.add("hidden");
+      iframe.classList.remove("hidden");
+      iframe.src = url;
+
+      // Trim forward history when navigating from middle
+      if (historyIndex < history.length - 1) {
+        history.splice(historyIndex + 1);
+      }
+      history.push(url);
+      historyIndex = history.length - 1;
+      updateNavButtons();
+    }
+
+    function updateNavButtons() {
+      backBtn.disabled = historyIndex <= 0;
+      fwdBtn.disabled  = historyIndex >= history.length - 1;
+    }
+
+    iframe.addEventListener("load", () => {
+      statusBar.textContent = "Done";
+    });
+
+    iframe.addEventListener("error", () => {
+      statusBar.textContent = "Error loading page";
+      iframe.classList.add("hidden");
+      errorPanel.classList.remove("hidden");
+    });
+
+    backBtn.addEventListener("click", () => {
+      if (historyIndex > 0) {
+        historyIndex--;
+        const url = history[historyIndex];
+        urlInput.value = url;
+        iframe.src = url;
+        errorPanel.classList.add("hidden");
+        iframe.classList.remove("hidden");
+        statusBar.textContent = "Loading...";
+        updateNavButtons();
+      }
+    });
+
+    fwdBtn.addEventListener("click", () => {
+      if (historyIndex < history.length - 1) {
+        historyIndex++;
+        const url = history[historyIndex];
+        urlInput.value = url;
+        iframe.src = url;
+        errorPanel.classList.add("hidden");
+        iframe.classList.remove("hidden");
+        statusBar.textContent = "Loading...";
+        updateNavButtons();
+      }
+    });
+
+    refreshBtn.addEventListener("click", () => {
+      iframe.src = iframe.src;
+      statusBar.textContent = "Refreshing...";
+    });
+
+    homeBtn.addEventListener("click", () => {
+      navigate(homepage);
+    });
+
+    goBtn.addEventListener("click", () => {
+      navigate(urlInput.value);
+    });
+
+    urlInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") navigate(urlInput.value);
+    });
+
+    // Allow typing in URL bar without dragging window
+    urlInput.addEventListener("mousedown", (e) => e.stopPropagation());
+
+    // Bookmarks
+    el.querySelectorAll(".browser-bookmark").forEach((btn) => {
+      btn.addEventListener("click", () => navigate(btn.dataset.url));
+    });
   }
 
   function renderQuotesApp(el) {
