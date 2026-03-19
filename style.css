@@ -1190,3 +1190,304 @@ body {
   margin-left: auto;
   font-size: 12px;
 }
+
+/* ===== Image Generator App ===== */
+.imagegen-app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 12px;
+  padding: 16px;
+  overflow-y: auto;
+  color: var(--text-primary);
+}
+
+.imagegen-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.imagegen-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.imagegen-row label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.imagegen-row-pair {
+  flex-direction: row;
+  gap: 10px;
+}
+
+.imagegen-field {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.imagegen-field label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+}
+
+.imagegen-key-wrap {
+  display: flex;
+  gap: 4px;
+}
+
+.imagegen-key-wrap .imagegen-key {
+  flex: 1;
+}
+
+.imagegen-eye-btn {
+  padding: 6px 10px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.08);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.imagegen-eye-btn:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+.imagegen-input,
+.imagegen-select {
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: inherit;
+}
+
+.imagegen-input:focus,
+.imagegen-select:focus {
+  border-color: var(--accent-light);
+}
+
+.imagegen-input::placeholder {
+  color: rgba(200,220,255,0.4);
+}
+
+.imagegen-select {
+  cursor: pointer;
+}
+
+.imagegen-select option {
+  background: #1a2a44;
+  color: #fff;
+}
+
+.imagegen-prompt-area {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.imagegen-prompt {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.08);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s;
+}
+
+.imagegen-prompt:focus {
+  border-color: var(--accent-light);
+}
+
+.imagegen-prompt::placeholder {
+  color: rgba(200,220,255,0.4);
+}
+
+.imagegen-upload-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.imagegen-upload-btn {
+  padding: 6px 12px;
+  border: 1px dashed rgba(255,255,255,0.3);
+  border-radius: 6px;
+  background: rgba(255,255,255,0.05);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.imagegen-upload-btn:hover {
+  background: rgba(255,255,255,0.12);
+  border-color: var(--accent-light);
+}
+
+.imagegen-file-name {
+  color: var(--text-secondary);
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.imagegen-clear-file {
+  padding: 2px 8px;
+  border: none;
+  border-radius: 4px;
+  background: rgba(224, 64, 64, 0.3);
+  color: #ff8888;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.imagegen-clear-file:hover {
+  background: rgba(224, 64, 64, 0.5);
+}
+
+.imagegen-actions {
+  display: flex;
+}
+
+.imagegen-generate-btn {
+  flex: 1;
+  padding: 10px 20px;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(60,140,255,0.5) 0%, rgba(40,100,200,0.6) 100%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+}
+
+.imagegen-generate-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(70,150,255,0.65) 0%, rgba(50,115,220,0.75) 100%);
+}
+
+.imagegen-generate-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.imagegen-generate-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.imagegen-output {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 120px;
+}
+
+.imagegen-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  opacity: 0.35;
+  text-align: center;
+  font-size: 14px;
+  padding: 20px;
+}
+
+.imagegen-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  opacity: 0.7;
+  font-size: 14px;
+}
+
+.imagegen-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid rgba(255,255,255,0.15);
+  border-top-color: var(--accent-light);
+  border-radius: 50%;
+  animation: imagegen-spin 0.8s linear infinite;
+}
+
+@keyframes imagegen-spin {
+  to { transform: rotate(360deg); }
+}
+
+.imagegen-error {
+  padding: 12px 16px;
+  background: rgba(224, 64, 64, 0.15);
+  border: 1px solid rgba(224, 64, 64, 0.3);
+  border-radius: 8px;
+  color: #ff9999;
+  font-size: 13px;
+}
+
+.imagegen-feedback {
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.imagegen-result-img {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.imagegen-result-img img {
+  max-width: 100%;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.15);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+.imagegen-download {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(60,140,255,0.3);
+  color: var(--accent-light);
+  text-decoration: none;
+  font-size: 12px;
+  transition: background 0.2s;
+}
+
+.imagegen-download:hover {
+  background: rgba(60,140,255,0.5);
+}
