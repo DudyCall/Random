@@ -477,6 +477,146 @@ body {
 
 .start-menu-right {
   width: 140px;
+/* ── Daily Tracker App ──────────────────────────────── */
+.tracker-app {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  color: #000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.tracker-header h3 {
+  margin: 0 0 5px 0;
+  color: #1e3a5f;
+  font-size: 1.2rem;
+}
+
+.tracker-header p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.tracker-status {
+  flex: 1;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: #666;
+  font-style: italic;
+}
+
+.contribution-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.contributor {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  transition: transform 0.2s, background 0.2s;
+}
+
+.contributor:hover {
+  background: rgba(255, 255, 255, 0.8);
+  transform: translateX(5px);
+}
+
+.contributor.done {
+  border-left: 5px solid #4caf50;
+}
+
+.contributor.pending {
+  border-left: 5px solid #ff9800;
+  opacity: 0.8;
+}
+
+.status-icon {
+  font-size: 1.5rem;
+}
+
+.user-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.status-label {
+  font-size: 0.8rem;
+  color: #555;
+  display: block;
+}
+
+.overall-status {
+  margin-top: 20px;
+  padding: 15px;
+  text-align: center;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #f0f0f0;
+  border: 1px dashed #ccc;
+}
+
+.overall-status.complete {
+  background: #e8f5e9;
+  border: 1px solid #4caf50;
+  color: #2e7d32;
+}
+
+.tracker-error {
+  color: #d32f2f;
+  text-align: center;
+  padding: 10px;
+  background: #ffebee;
+  border-radius: 4px;
+}
+
+.tracker-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.sync-btn {
+  padding: 8px 16px;
+  background: linear-gradient(to bottom, #f9f9f9, #e0e0e0);
+  border: 1px solid #999;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.sync-btn:hover:not(:disabled) {
+  background: linear-gradient(to bottom, #e0e0e0, #cccccc);
+  border-color: #666;
+}
+
+.sync-btn:active:not(:disabled) {
+  background: #d0d0d0;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.sync-btn:disabled {
+  opacity: 0.5;
+  cursor: wait;
+}
   padding: 8px 0;
   display: flex;
   flex-direction: column;
