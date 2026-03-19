@@ -14,4 +14,5 @@ export const appRegistry = [
   { id: "tracker",    name: "Daily Tracker",     icon: "📅" },
   { id: "browser",    name: "Web Browser",       icon: "🌐" },
   { id: "imagegen",   name: "Image Generator",   icon: "🖼️" },
+  { id: "music",      name: "Music Player",      icon: "🎵" },
 ];
