@@ -44,11 +44,16 @@ export function triggerShutdown() {
   const $overlay = document.getElementById("shutdown-overlay");
   $overlay.classList.remove("hidden");
   
-  // Optionally play sound or wait then reload
+  // Play shutdown sound
+  const shutdownSound = new Audio("sound/shut_down.mp3");
+  shutdownSound.play().catch(err => {
+    console.warn("Could not play shutdown sound:", err);
+  });
+  
+  // Wait then reload (simulating shutdown)
   setTimeout(() => {
-    // In a real app we might redirect to a login screen or just sit here
     console.log("System shut down.");
-    // location.reload(); // Uncomment if you want it to restart after 5s
+    // location.reload(); 
   }, 5000);
 }
 
