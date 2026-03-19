@@ -97,12 +97,15 @@ export function renderMusicApp(el) {
   let source = null;
   let dataArray = null;
 
-  // Pre-load bundled track
-  const bundledTrack = {
-    name: "Lonely Thomas Eli (Remastered)",
-    url: "assets/audio/Lonely Thomas Eli (Remastered).mp3",
-  };
-  playlist.push(bundledTrack);
+  // Pre-load bundled tracks
+  const bundledTracks = [
+    { name: "Boys of Diablo (Remastered)", url: "assets/audio/Boys of Diablo (Remastered).mp3" },
+    { name: "Gunn-Lifes in the Way (Cover)", url: "assets/audio/Gunn-Lifes in the Way (Cover).mp3" },
+    { name: "I will paint the day in gray", url: "assets/audio/I will paint the day in gray.mp3" },
+    { name: "Lonely Thomas Eli (Remastered)", url: "assets/audio/Lonely Thomas Eli (Remastered).mp3" },
+    { name: "Oh, lovely bloom", url: "assets/audio/Oh, lovely bloom.mp3" },
+  ];
+  playlist.push(...bundledTracks);
   renderPlaylist();
 
   // Volume init
