@@ -11,6 +11,7 @@ import { renderWeatherApp } from "./weather.js";
 import { renderDailyTracker } from "./tracker.js";
 import { renderBrowserApp } from "./browser.js";
 import { renderImageGenApp } from "./imagegen.js";
+import { renderMusicApp } from "./music.js";
 
 export const appRenderers = {
   dice:       renderDiceApp,
@@ -26,4 +27,5 @@ export const appRenderers = {
   tracker:    renderDailyTracker,
   browser:    renderBrowserApp,
   imagegen:   renderImageGenApp,
+  music:      renderMusicApp,
 };
