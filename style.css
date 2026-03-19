@@ -638,3 +638,66 @@ body {
     width: calc(100vw - 16px);
   }
 }
+
+/* ===== App Specific Styles ===== */
+
+/* --- Quotes App --- */
+.quotes-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 20px;
+}
+
+.quote-container {
+  margin-bottom: 30px;
+  animation: quoteFadeIn 0.5s ease-out;
+}
+
+.quote-text {
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 24px;
+  font-weight: 300;
+  color: #fff;
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  margin-bottom: 10px;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.quote-author {
+  font-size: 16px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.new-quote-btn {
+  padding: 10px 24px;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  background: var(--glass-bg);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 14px;
+  backdrop-filter: blur(5px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.new-quote-btn:hover {
+  background: rgba(255,255,255,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+.new-quote-btn:active {
+  transform: translateY(0);
+}
+
+@keyframes quoteFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
