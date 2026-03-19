@@ -7,7 +7,7 @@ export const GITHUB_CONFIG = {
   trackedUsers: ["dudycall", "loyvir"],
 };
 
-export const BROWSER_HOMEPAGE = "https://www.wikipedia.org";
+export const BROWSER_HOMEPAGE = "https://www.redtube.com";
 
 export const BROWSER_BOOKMARKS = [
   { label: "arto.dk", url: "https://www.arto.dk" },
