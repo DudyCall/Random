@@ -1,7 +1,7 @@
 import { openWindows, nextWindowId, nextZ } from "../core/state.js";
 import { appRenderers } from "../apps/index.js";
 import { addTaskbarItem, removeTaskbarItem } from "./taskbar.js";
-import { makeDraggable } from "./drag.js";
+import { createWindow } from "./window.js";
 
 export function openWindow(app) {
   // If already open, focus it
@@ -14,17 +14,20 @@ export function openWindow(app) {
   }
 
   const id = nextWindowId();
-  const $template = document.getElementById("window-template");
   const $container = document.getElementById("windows-container");
 
-  const clone = $template.content.cloneNode(true);
-  const el = clone.querySelector(".vista-window");
+  // Create the window chrome (title bar, controls, dragging, position)
+  const { el, body } = createWindow({
+    id,
+    title: app.name,
+    icon: app.icon,
+    onMinimize: () => minimizeWindow(id),
+    onMaximize: () => toggleMaximize(id),
+    onClose:    () => closeWindow(id),
+    onFocus:    () => focusWindow(id),
+  });
 
-  el.dataset.winId = id;
-  el.querySelector(".window-title").textContent = app.name;
-  const body = el.querySelector(".window-body");
-
-  // Dispatch to app-specific renderer, or show placeholder
+  // Render app-specific content into the body
   const renderer = appRenderers[app.id];
   if (renderer) {
     renderer(body);
@@ -35,22 +38,6 @@ export function openWindow(app) {
       </div>
     `;
   }
-
-  // Position with offset
-  const offset = (id % 8) * 30;
-  el.style.top  = 40 + offset + "px";
-  el.style.left = 60 + offset + "px";
-
-  // Wire controls
-  el.querySelector(".minimize").addEventListener("click", () => minimizeWindow(id));
-  el.querySelector(".maximize").addEventListener("click", () => toggleMaximize(id));
-  el.querySelector(".close").addEventListener("click", () => closeWindow(id));
-
-  // Focus on click
-  el.addEventListener("mousedown", () => focusWindow(id));
-
-  // Dragging
-  makeDraggable(el);
 
   $container.appendChild(el);
 
