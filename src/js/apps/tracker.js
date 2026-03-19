@@ -1,7 +1,8 @@
+import { GITHUB_CONFIG } from "../core/constants.js";
+
 async function fetchGithubStatus() {
-  const owner = "DudyCall";
-  const repo = "Random";
-  const url = `https://api.github.com/repos/${owner}/${repo}/commits?per_page=10`;
+  const { owner, repo, commitsFetchCount, trackedUsers } = GITHUB_CONFIG;
+  const url = `https://api.github.com/repos/${owner}/${repo}/commits?per_page=${commitsFetchCount}`;
 
   try {
     const response = await fetch(url);
@@ -14,8 +15,7 @@ async function fetchGithubStatus() {
     const commits = await response.json();
     const today = new Date().toISOString().split("T")[0];
 
-    let dudycallCommitted = false;
-    let loyvirCommitted = false;
+    const committed = Object.fromEntries(trackedUsers.map((u) => [u, false]));
 
     commits.forEach((commit) => {
       const commitDate = commit.commit.author.date.split("T")[0];
@@ -23,27 +23,26 @@ async function fetchGithubStatus() {
         const author = commit.author
           ? commit.author.login.toLowerCase()
           : commit.commit.author.name.toLowerCase();
-        if (author === "dudycall") dudycallCommitted = true;
-        if (author === "loyvir") loyvirCommitted = true;
+        if (author in committed) committed[author] = true;
       }
     });
 
-    return {
-      dudycall: dudycallCommitted,
-      loyvir: loyvirCommitted,
-      both: dudycallCommitted && loyvirCommitted,
-    };
+    const all = trackedUsers.every((u) => committed[u]);
+    return { users: committed, all };
   } catch {
     return { error: "Failed to connect to GitHub." };
   }
 }
 
 export async function renderDailyTracker(el) {
+  const { trackedUsers } = GITHUB_CONFIG;
+  const displayNames = trackedUsers.map((u) => u.charAt(0).toUpperCase() + u.slice(1));
+
   el.innerHTML = `
     <div class="tracker-app">
       <div class="tracker-header">
         <h3>Daily Contribution Tracker</h3>
-        <p>Tracking: <strong>Dudycall</strong> & <strong>Loyvir</strong></p>
+        <p>Tracking: ${displayNames.map((n) => `<strong>${n}</strong>`).join(" & ")}</p>
       </div>
       <div class="tracker-status" id="tracker-content">
         <div class="loading-spinner">Checking GitHub...</div>
@@ -71,19 +70,19 @@ export async function renderDailyTracker(el) {
 
     content.innerHTML = `
       <div class="contribution-list">
-        <div class="contributor ${status.dudycall ? "done" : "pending"}">
-          <span class="status-icon">${status.dudycall ? "✅" : "⏳"}</span>
-          <span class="user-name">Dudycall</span>
-          <span class="status-label">${status.dudycall ? "Added something today!" : "Not yet..."}</span>
-        </div>
-        <div class="contributor ${status.loyvir ? "done" : "pending"}">
-          <span class="status-icon">${status.loyvir ? "✅" : "⏳"}</span>
-          <span class="user-name">Loyvir</span>
-          <span class="status-label">${status.loyvir ? "Added something today!" : "Not yet..."}</span>
-        </div>
+        ${trackedUsers.map((user) => {
+          const done = status.users[user];
+          const name = user.charAt(0).toUpperCase() + user.slice(1);
+          return `
+            <div class="contributor ${done ? "done" : "pending"}">
+              <span class="status-icon">${done ? "✅" : "⏳"}</span>
+              <span class="user-name">${name}</span>
+              <span class="status-label">${done ? "Added something today!" : "Not yet..."}</span>
+            </div>`;
+        }).join("")}
       </div>
-      <div class="overall-status ${status.both ? "complete" : ""}">
-        ${status.both ? "🎉 Day Complete! Great work team!" : "💪 Keep going! Both players need to contribute."}
+      <div class="overall-status ${status.all ? "complete" : ""}">
+        ${status.all ? "🎉 Day Complete! Great work team!" : "💪 Keep going! Both players need to contribute."}
       </div>
     `;
   }

@@ -1,6 +1,7 @@
+import { BROWSER_HOMEPAGE, BROWSER_BOOKMARKS } from "../core/constants.js";
+
 export function renderBrowserApp(el) {
-  const homepage = "https://www.wikipedia.org";
-  const history = [homepage];
+  const history = [BROWSER_HOMEPAGE];
   let historyIndex = 0;
 
   el.innerHTML = `
@@ -11,16 +12,15 @@ export function renderBrowserApp(el) {
         <button class="browser-nav-btn" data-action="refresh" title="Refresh">⟳</button>
         <button class="browser-nav-btn" data-action="home" title="Home">🏠</button>
         <div class="browser-url-bar">
-          <input type="text" class="browser-url-input" value="${homepage}" spellcheck="false" />
+          <input type="text" class="browser-url-input" value="${BROWSER_HOMEPAGE}" spellcheck="false" />
         </div>
         <button class="browser-nav-btn browser-go-btn" data-action="go" title="Go">→</button>
       </div>
       <div class="browser-bookmarks-bar">
-        <button class="browser-bookmark" data-url="https://www.arto.dk">⭐ arto.dk</button>
-        <button class="browser-bookmark" data-url="https://www.seydur.ngrok.app">⭐ seydur.ngrok.app</button>
+          ${BROWSER_BOOKMARKS.map(b => `<button class="browser-bookmark" data-url="${b.url}">⭐ ${b.label}</button>`).join("\n          ")}
       </div>
       <div class="browser-viewport">
-        <iframe class="browser-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" src="${homepage}"></iframe>
+        <iframe class="browser-frame" sandbox="allow-scripts allow-same-origin allow-forms allow-popups" src="${BROWSER_HOMEPAGE}"></iframe>
         <div class="browser-error hidden">
           <div class="browser-error-icon">⚠️</div>
           <div class="browser-error-title">This page can't be displayed</div>
@@ -43,7 +43,7 @@ export function renderBrowserApp(el) {
 
   function normalizeUrl(raw) {
     let url = raw.trim();
-    if (!url) return homepage;
+    if (!url) return BROWSER_HOMEPAGE;
     if (!/^https?:\/\//i.test(url)) {
       if (/^[\w-]+(\.[\w-]+)+/.test(url)) {
         url = "https://" + url;
@@ -117,7 +117,7 @@ export function renderBrowserApp(el) {
   });
 
   homeBtn.addEventListener("click", () => {
-    navigate(homepage);
+    navigate(BROWSER_HOMEPAGE);
   });
 
   goBtn.addEventListener("click", () => {
