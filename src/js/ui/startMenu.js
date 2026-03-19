@@ -42,18 +42,32 @@ export function toggleStartMenu(force) {
 
 export function triggerShutdown() {
   const $overlay = document.getElementById("shutdown-overlay");
-  $overlay.classList.remove("hidden");
+  const $status = document.getElementById("shutdown-status");
+  const $restartBtn = document.getElementById("restart-btn");
   
+  $overlay.classList.remove("hidden");
+  $status.innerText = "Shutting down...";
+  $restartBtn.classList.add("hidden");
+
   // Play shutdown sound
   const shutdownSound = new Audio("sound/shut_down.mp3");
   shutdownSound.play().catch(err => {
     console.warn("Could not play shutdown sound:", err);
   });
   
-  // Wait then reload (simulating shutdown)
+  // Bind restart button once
+  if (!$restartBtn.dataset.bound) {
+    $restartBtn.addEventListener("click", () => {
+      location.reload();
+    });
+    $restartBtn.dataset.bound = "true";
+  }
+
+  // After some time (matching sound duration or fixed delay)
   setTimeout(() => {
+    $status.innerText = "It is now safe to turn off your computer.";
+    $restartBtn.classList.remove("hidden");
     console.log("System shut down.");
-    // location.reload(); 
   }, 5000);
 }
 
