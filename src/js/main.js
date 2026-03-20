@@ -6,12 +6,14 @@ import { buildDesktopIcons } from "./ui/desktop.js";
 import { buildStartMenu, toggleStartMenu } from "./ui/startMenu.js";
 import { showContextMenu, removeContextMenu } from "./ui/contextMenu.js";
 import { initTaskbar } from "./ui/taskbar.js";
+import { initSidebar } from "./ui/sidebar.js";
 import { tickClock } from "./utils/clock.js";
 import { clippy } from "./core/clippy.js";
 
-function init() {
+async function init() {
   initTaskbar();
-  buildDesktopIcons();
+  initSidebar();
+  await buildDesktopIcons();
   buildStartMenu();
   bindGlobalEvents();
   tickClock();

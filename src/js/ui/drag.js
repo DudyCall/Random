@@ -1,3 +1,5 @@
+import { saveIconPosition } from "../core/firebaseDb.js";
+
 export function makeDraggable(winEl) {
   const titlebar = winEl.querySelector(".window-titlebar");
   let isDragging = false;
@@ -73,6 +75,10 @@ export function makeIconDraggable(el) {
     if (hasMoved) {
       // Small timeout to prevent immediate click/dblclick if needed
       setTimeout(() => { hasMoved = false; }, 50);
+      const appId = el.getAttribute("data-app");
+      if (appId) {
+        saveIconPosition(appId, el.style.left, el.style.top);
+      }
     }
   });
   

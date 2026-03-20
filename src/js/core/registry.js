@@ -11,7 +11,6 @@ export const appRegistry = [
   { id: "quotes",     name: "Random Quotes",     icon: "💬" },
   { id: "trivia",     name: "Trivia",            icon: "❓" },
   { id: "weather",    name: "Weather",           icon: "🌤️" },
-  { id: "tracker",    name: "Daily Tracker",     icon: "📅" },
   { id: "browser",    name: "Web Browser",       icon: "🌐" },
   { id: "imagegen",   name: "Image Generator",   icon: "🖼️" },
   { id: "music",      name: "Music Player",      icon: "🎵" },
