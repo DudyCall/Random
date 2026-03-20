@@ -49,7 +49,7 @@ body {
 #desktop {
   position: absolute;
   inset: 0 0 var(--taskbar-height) 0;
-  background: url('wallpaper.jpg');
+  background: url('assets/images/wallpaper.jpg');
   background-size: cover;
   background-position: center;
 }

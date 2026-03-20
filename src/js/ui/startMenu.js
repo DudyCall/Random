@@ -50,7 +50,7 @@ export function triggerShutdown() {
   $restartBtn.classList.add("hidden");
 
   // Play shutdown sound
-  const shutdownSound = new Audio("sound/shut_down.mp3");
+  const shutdownSound = new Audio("assets/audio/shut_down.mp3");
   shutdownSound.play().catch(err => {
     console.warn("Could not play shutdown sound:", err);
   });
