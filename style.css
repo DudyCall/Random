@@ -1912,7 +1912,7 @@ body {
 .clippy-sprite {
   width: 100px;
   height: 100px;
-  background: url('assets/images/clippy.png') no-repeat center center;
+  background: url('assets/images/clippy2.png') no-repeat center center;
   background-size: contain;
   cursor: pointer;
   pointer-events: auto;
