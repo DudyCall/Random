@@ -12,6 +12,7 @@ import { renderDailyTracker } from "./tracker.js";
 import { renderBrowserApp } from "./browser.js";
 import { renderImageGenApp } from "./imagegen.js";
 import { renderMusicApp } from "./music.js";
+import { renderTerminalApp } from "./terminal.js";
 
 export const appRenderers = {
   dice:       renderDiceApp,
@@ -28,4 +29,5 @@ export const appRenderers = {
   browser:    renderBrowserApp,
   imagegen:   renderImageGenApp,
   music:      renderMusicApp,
+  terminal:   renderTerminalApp,
 };
