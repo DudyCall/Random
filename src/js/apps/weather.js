@@ -45,7 +45,7 @@ export function renderWeatherApp(el) {
   searchBtn.addEventListener("click", searchCity);
   input.addEventListener("keydown", (e) => { if (e.key === "Enter") searchCity(); });
 
-  locateBtn.addEventListener("click", () => {
+  function fetchByLocation() {
     if (!navigator.geolocation) {
       content.innerHTML = '<div class="weather-error">Geolocation not supported by your browser.</div>';
       return;
@@ -59,7 +59,12 @@ export function renderWeatherApp(el) {
         content.innerHTML = '<div class="weather-error">Location access denied.</div>';
       }
     );
-  });
+  }
+
+  locateBtn.addEventListener("click", fetchByLocation);
+
+  // Auto-fetch weather for current location on startup
+  fetchByLocation();
 
   async function loadWeather(lat, lon, name, country) {
     content.innerHTML = '<div class="weather-loading">Loading weather...</div>';
